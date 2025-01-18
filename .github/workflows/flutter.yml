@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter CI/CD Workflow
 
 on:
   push:
@@ -10,28 +10,70 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build, Test, and Analyze
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Set up Flutter environment
-      - name: Setup Flutter
+      # Step 2: Set up Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 'stable'
 
-      # Install dependencies
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      # Run analyzer to check for code quality
+      # Step 4: Run code analysis
       - name: Run Flutter Analyze
         run: flutter analyze
 
-      # Run tests
+      # Step 5: Run tests
       - name: Run Flutter Tests
         run: flutter test
+
+      # Step 6: Build APK for Android
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Step 7: Upload APK artifact
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+#   ios-build:
+#     name: Build iOS App (IPA)
+#     runs-on: macos-latest
+#     if: github.event_name == 'push' || github.event_name == 'pull_request'
+
+#     steps:
+#       # Step 1: Checkout the code
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+
+#       # Step 2: Set up Flutter
+#       - name: Set up Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           flutter-version: 'stable'
+
+#       # Step 3: Install dependencies
+#       - name: Install Dependencies
+#         run: flutter pub get
+
+#       # Step 4: Build IPA for iOS
+#       - name: Build IPA
+#         run: flutter build ios --release
+
+#       # Step 5: Upload IPA artifact
+#       - name: Upload IPA Artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: ios-release-ipa
+#           path: build/ios/iphoneos/*.ipa
